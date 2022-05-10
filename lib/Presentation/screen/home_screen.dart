@@ -56,14 +56,36 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           )),
-          Center(child: BlocBuilder<CounterBloc, CounterBlocState>(
-            builder: (context, state) {
-              return Text(
-                state.counter.toString(),
-                style:
-                    const TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
-              );
+          Center(
+              child: BlocListener<CounterBloc, CounterBlocState>(
+            listener: (context, state) {
+              if (state is IncrementState) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Successfully Increment'),
+                    duration: Duration(milliseconds: 300),
+                  ),
+                );
+              } else {
+                if (state is DecrementState) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Successfully Decrement'),
+                      duration: Duration(milliseconds: 300),
+                    ),
+                  );
+                }
+              }
             },
+            child: BlocBuilder<CounterBloc, CounterBlocState>(
+              builder: (context, state) {
+                return Text(
+                  state.counter.toString(),
+                  style: const TextStyle(
+                      fontSize: 50, fontWeight: FontWeight.bold),
+                );
+              },
+            ),
           )),
           ElevatedButton(
               onPressed: () {

@@ -15,3 +15,13 @@ class CounterBlocState extends Equatable {
 class CounterInitial extends CounterBlocState {
   const CounterInitial() : super(counter: 0);
 }
+
+class IncrementState extends CounterBlocState {
+  // using for bloc listener
+  const IncrementState(int increment) : super(counter: increment);
+}
+
+class DecrementState extends CounterBlocState {
+  // using for bloc listener
+  const DecrementState(int increment) : super(counter: increment);
+}
