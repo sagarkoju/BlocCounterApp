@@ -56,8 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           )),
-          Center(
-              child: BlocListener<CounterBloc, CounterBlocState>(
+          BlocConsumer<CounterBloc, CounterBlocState>(
             listener: (context, state) {
               if (state is IncrementState) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -77,16 +76,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               }
             },
-            child: BlocBuilder<CounterBloc, CounterBlocState>(
-              builder: (context, state) {
-                return Text(
-                  state.counter.toString(),
-                  style: const TextStyle(
-                      fontSize: 50, fontWeight: FontWeight.bold),
-                );
-              },
-            ),
-          )),
+            builder: (context, state) {
+              return Text(
+                state.counter.toString(),
+                style:
+                    const TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+              );
+            },
+          ),
           ElevatedButton(
               onPressed: () {
                 context.read<CounterBloc>().add(CounterIncrement());
