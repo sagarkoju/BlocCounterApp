@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
 part of 'counter_bloc.dart';
 
 @immutable
@@ -10,6 +11,18 @@ class CounterBlocState extends Equatable {
 
   @override
   List<Object?> get props => [counter];
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'counter': counter,
+    };
+  }
+
+  factory CounterBlocState.fromMap(Map<String, dynamic> map) {
+    return CounterBlocState(
+      counter: map['counter'] as int,
+    );
+  }
 }
 
 class CounterInitial extends CounterBlocState {
