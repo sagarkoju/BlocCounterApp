@@ -1,3 +1,4 @@
+import 'package:bloc_practise/Theme/cubit/theme_cubit.dart';
 import 'package:bloc_practise/bloc/counter_bloc.dart';
 import 'package:bloc_practise/cubit/counter_cubit.dart';
 import 'package:flutter/material.dart';
@@ -13,40 +14,45 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    ThemeCubit themeCubit = BlocProvider.of<ThemeCubit>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Counter app for Bloc'),
         centerTitle: true,
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 50,
-            child: IconButton(
-              onPressed: () {
-                BlocProvider.of<CounterCubit>(context).increment();
-              },
-              icon: const Icon(Icons.add),
-            ),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          CircleAvatar(
-            radius: 50,
-            child: IconButton(
-              onPressed: () {
-                BlocProvider.of<CounterCubit>(context).decrement();
-              },
-              icon: const Icon(Icons.minimize),
-            ),
-          ),
-        ],
-      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Center(
+            child: BlocListener<ThemeCubit, ThemeState>(
+              listener: (context, state) {
+                if (state is ThemeDark) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(state.message),
+                    duration: const Duration(milliseconds: 300),
+                  ));
+                } else {
+                  if (state is ThemeLight) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(state.message),
+                      duration: const Duration(milliseconds: 300),
+                    ));
+                  }
+                }
+              },
+              child: BlocBuilder<ThemeCubit, ThemeState>(
+                builder: (context, state) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      themeCubit.toggle();
+                      print(state);
+                    },
+                    child: const Text('Toggle from Cubit'),
+                  );
+                },
+              ),
+            ),
+          ),
           Center(child: BlocBuilder<CounterCubit, CounterState>(
             builder: (context, state) {
               return Text(
@@ -88,12 +94,22 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 context.read<CounterBloc>().add(CounterIncrement());
               },
-              child: const Text('Increment')),
+              child: const Text('Increment from Bloc')),
           ElevatedButton(
               onPressed: () {
                 context.read<CounterBloc>().add(Counterdecrement());
               },
-              child: const Text('Decrement'))
+              child: const Text('Decrement from Bloc')),
+          ElevatedButton(
+              onPressed: () {
+                BlocProvider.of<CounterCubit>(context).increment();
+              },
+              child: const Text('Increment from Cubit')),
+          ElevatedButton(
+              onPressed: () {
+                BlocProvider.of<CounterCubit>(context).decrement();
+              },
+              child: const Text('Decrement from Cubit'))
         ],
       ),
     );

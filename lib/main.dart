@@ -1,4 +1,6 @@
+import 'package:bloc_practise/AppRouter/app_router.dart';
 import 'package:bloc_practise/Presentation/screen/home_screen.dart';
+import 'package:bloc_practise/Theme/cubit/theme_cubit.dart';
 import 'package:bloc_practise/bloc/counter_bloc.dart';
 import 'package:bloc_practise/bloc/my_bloc_observer.dart';
 import 'package:bloc_practise/cubit/counter_cubit.dart';
@@ -14,35 +16,40 @@ void main() async {
       storageDirectory: await getApplicationDocumentsDirectory());
   HydratedBlocOverrides.runZoned(
       () => runApp(
-            const MyApp(),
+            MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => CounterCubit(),
+                ),
+                BlocProvider(
+                  create: (context) => CounterBloc(),
+                ),
+                BlocProvider(
+                  create: (context) => ThemeCubit(),
+                ),
+              ],
+              child: MyApp(
+                appRouter: AppRouter(),
+              ),
+            ),
           ),
       storage: storage,
       blocObserver: MyBlocObserver());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  const MyApp({Key? key, required this.appRouter}) : super(key: key);
+  final AppRouter appRouter;
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      // we can use MultiRepositoryProvider and it take RepositoryProvider to its childer class
-      providers: [
-        BlocProvider(
-          create: (context) => CounterCubit(),
-        ),
-        BlocProvider(
-          create: (context) => CounterBloc(),
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const HomeScreen(),
-      ),
+    ThemeCubit themeCubit = BlocProvider.of<ThemeCubit>(context, listen: true);
+    bool isDark = themeCubit.isDark;
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: isDark ? ThemeData.dark() : ThemeData.light(),
+      initialRoute: '/home',
+      onGenerateRoute: appRouter.generateRoute,
     );
   }
 }
